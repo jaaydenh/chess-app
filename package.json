@@ -28,6 +28,7 @@
     "@vitejs/plugin-react-swc": "^3.3.2",
     "@vitest/ui": "^0.34.3",
     "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "jsdom": "^22.1.0",

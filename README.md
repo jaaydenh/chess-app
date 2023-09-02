@@ -5,6 +5,9 @@ A functional chess game built using [chessboard.jsx](https://github.com/willb335
 # Usage
 
 ```
+pmpm install
+```
+```
 pnpm run dev
 ```
 

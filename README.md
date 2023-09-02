@@ -2,7 +2,7 @@
 
 A functional chess game built using [chessboard.jsx](https://github.com/willb335/chessboardjsx) and [chess.js](https://github.com/jhlywa/chess.js/). UX inspired by [lichess.org](https://lichess.org/)
 
-# Usage
+Deployed at https://jaaydenh.github.io/chess-app/
 
 ```
 pmpm install

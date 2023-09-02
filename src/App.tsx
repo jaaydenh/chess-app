@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Chessboard from 'chessboardjsx';
 import { Chess, Square, Move } from 'chess.js';
 import moveAudio from './assets/sounds/move.mp3';
@@ -86,9 +86,9 @@ const buildSquareStyles = (
 };
 
 function App() {
-  const [game, setGame] = useState<Chess>(new Chess());
-  const [activeSquare, setActiveSquare] = useState<Square | string>('');
-  const [activeDragSquare, setActiveDragSquare] = useState<Square | string>('');
+  const [game] = useState<Chess>(new Chess());
+  const [activeSquare, setActiveSquare] = useState<string>('');
+  const [activeDragSquare, setActiveDragSquare] = useState<string>('');
   const [squareStyles, setSquareStyles] = useState({});
   const dropSquareStyle = { backgroundColor: 'hsla(81, 18%, 50%, .7)' };
 
@@ -187,12 +187,14 @@ function App() {
     setSquareStyles(buildSquareStyles(null, [], game));
     setActiveSquare('');
     const audio = new Audio(move.captured ? captureAudio : moveAudio);
-    audio.play();
+    audio.play().catch((error) => {
+      console.log(error);
+    });
   };
 
   return (
     <Chessboard
-      position={game && game.fen()}
+      position={game.fen()}
       onSquareClick={onSquareClick}
       onDrop={onDrop}
       onDragOverSquare={onDragOverSquare}

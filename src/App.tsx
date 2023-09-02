@@ -194,12 +194,18 @@ function App() {
 
   return (
     <Chessboard
+      id="board"
+      calcWidth={({ screenWidth }) => (screenWidth < 560 ? 350 : 480)}
       position={game.fen()}
       onSquareClick={onSquareClick}
       onDrop={onDrop}
       onDragOverSquare={onDragOverSquare}
       dropSquareStyle={dropSquareStyle}
       squareStyles={squareStyles}
+      boardStyle={{
+        borderRadius: '5px',
+        boxShadow: `0 4px 12px rgba(0, 0, 0, 0.5)`,
+      }}
     />
   );
 }

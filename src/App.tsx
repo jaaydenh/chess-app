@@ -44,10 +44,12 @@ function App() {
 
   const onSquareClick = (square: Square) => {
     switch (activeSquare) {
-      case square: // clear move hints and deactivate active square
+      // clear move hints and deactivate active square
+      case square:
         setSquareStyles(buildSquareStyles(null, game));
         setActiveSquare('');
         break;
+      // set active square and display move hints
       case '': {
         setActiveSquare(square);
         setSquareStyles(buildSquareStyles(square, game));
@@ -65,6 +67,8 @@ function App() {
             movePiece({
               sourceSquare: activeSquare as Square,
               targetSquare: square,
+            }).catch((error) => {
+              console.log(error);
             });
           } else {
             setActiveSquare(square);
@@ -80,25 +84,29 @@ function App() {
     targetSquare: Square;
   }): void => {
     setActiveDragSquare('');
-    try {
-      movePiece(obj);
-    } catch (error) {
+    movePiece(obj).catch((error) => {
       console.log(error);
-    }
+    });
   };
 
-  const movePiece = (obj: { sourceSquare: Square; targetSquare: Square }) => {
+  const movePiece = async (obj: {
+    sourceSquare: Square;
+    targetSquare: Square;
+  }) => {
     const move = game.move({
       from: obj.sourceSquare,
       to: obj.targetSquare,
-      promotion: 'q',
+      promotion: 'q', // TODO: allow player to choose piece
     });
     setSquareStyles(buildSquareStyles(null, game));
     setActiveSquare('');
+
     const audio = new Audio(move.captured ? captureAudio : moveAudio);
-    audio.play().catch((error) => {
+    try {
+      await audio.play();
+    } catch (error) {
       console.log(error);
-    });
+    }
   };
 
   return (

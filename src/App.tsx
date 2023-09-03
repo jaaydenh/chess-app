@@ -1,96 +1,18 @@
 import { useState } from 'react';
 import Chessboard from 'chessboardjsx';
-import { Chess, Square, Move } from 'chess.js';
+import { Chess, Square } from 'chess.js';
+
+import { buildSquareStyles } from './utils/styleHelpers';
 import moveAudio from './assets/sounds/move.mp3';
 import captureAudio from './assets/sounds/capture.mp3';
 import './App.css';
-
-type HintSquare = {
-  square: Square;
-  capture: boolean;
-};
-
-const squareStyling = (opts: {
-  pieceSquare: Square | null;
-  history: Move[];
-}) => {
-  const sourceSquare =
-    opts.history.length && opts.history[opts.history.length - 1].from;
-  const targetSquare =
-    opts.history.length && opts.history[opts.history.length - 1].to;
-
-  return {
-    ...(opts.pieceSquare && {
-      [opts.pieceSquare]: { backgroundColor: 'hsla(81, 18%, 50%, 1)' },
-    }),
-    ...(opts.history.length && {
-      [sourceSquare]: {
-        backgroundColor: 'hsla(81, 58%, 50%, .6)',
-      },
-    }),
-    ...(opts.history.length && {
-      [targetSquare]: {
-        backgroundColor: 'hsla(81, 58%, 50%, .6)',
-      },
-    }),
-  };
-};
-
-const showHintsForSquare = (square: Square, game: Chess) => {
-  const moves = game.moves({
-    square: square,
-    verbose: true,
-  });
-
-  const squaresToHighlight: HintSquare[] = moves.map((move) => {
-    return {
-      square: move.to,
-      capture: move.captured ? true : false,
-    };
-  });
-
-  return squaresToHighlight;
-};
-
-const buildSquareStyles = (
-  sourceSquare: Square | null,
-  hintSquares: HintSquare[],
-  game: Chess,
-) => {
-  const hintStyles = [...hintSquares].reduce((a, c) => {
-    return {
-      ...a,
-      ...(!c.capture && {
-        [c.square]: {
-          background:
-            'radial-gradient(circle, hsla(81, 18%, 50%, .7), hsla(81, 18%, 50%, .7) 25%, transparent 25%)',
-          borderRadius: '50%',
-        },
-      }),
-      ...(c.capture && {
-        [c.square]: {
-          background:
-            'radial-gradient(circle, transparent, transparent 78%, hsla(81, 18%, 50%, .7) 78%)',
-        },
-      }),
-    };
-  }, {});
-
-  return {
-    ...squareStyling({
-      history: game.history({ verbose: true }),
-      pieceSquare: sourceSquare,
-    }),
-    ...hintStyles,
-  };
-};
 
 function App() {
   const [game] = useState<Chess>(new Chess());
   const [activeSquare, setActiveSquare] = useState<string>('');
   const [activeDragSquare, setActiveDragSquare] = useState<string>('');
   const [squareStyles, setSquareStyles] = useState({});
-  const dropSquareStyle = { backgroundColor: 'hsla(81, 18%, 50%, .7)' };
+  const dropSquareStyle = { backgroundColor: 'hsla(81, 18%, 50%, 1)' };
 
   // useEffect(() => {
   //   try {
@@ -116,29 +38,19 @@ function App() {
   const onDragOverSquare = (square: Square) => {
     if (activeDragSquare === '') {
       setActiveDragSquare(square);
-
-      const hintSquares = showHintsForSquare(square, game);
-      if (hintSquares.length > 0) {
-        setSquareStyles(buildSquareStyles(square, hintSquares, game));
-      } else {
-        setSquareStyles(buildSquareStyles(square, [], game));
-      }
+      setSquareStyles(buildSquareStyles(square, game));
     }
   };
 
   const onSquareClick = (square: Square) => {
     switch (activeSquare) {
       case square: // clear move hints and deactivate active square
-        setSquareStyles(buildSquareStyles(null, [], game));
+        setSquareStyles(buildSquareStyles(null, game));
         setActiveSquare('');
         break;
       case '': {
         setActiveSquare(square);
-
-        const hintSquares = showHintsForSquare(square, game);
-        if (hintSquares.length > 0) {
-          setSquareStyles(buildSquareStyles(square, hintSquares, game));
-        }
+        setSquareStyles(buildSquareStyles(square, game));
         break;
       }
       // Make a move if possible
@@ -155,11 +67,8 @@ function App() {
               targetSquare: square,
             });
           } else {
-            const hintSquares = showHintsForSquare(square, game);
-            if (hintSquares.length > 0) {
-              setActiveSquare(square);
-              setSquareStyles(buildSquareStyles(square, hintSquares, game));
-            }
+            setActiveSquare(square);
+            setSquareStyles(buildSquareStyles(square, game));
           }
         }
         break;
@@ -184,7 +93,7 @@ function App() {
       to: obj.targetSquare,
       promotion: 'q',
     });
-    setSquareStyles(buildSquareStyles(null, [], game));
+    setSquareStyles(buildSquareStyles(null, game));
     setActiveSquare('');
     const audio = new Audio(move.captured ? captureAudio : moveAudio);
     audio.play().catch((error) => {

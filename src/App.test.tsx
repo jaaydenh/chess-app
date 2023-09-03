@@ -1,15 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import App from './App';
 
 describe('App', () => {
-  it('renders white pawn in a new position after moving by clicking', async () => {
+  beforeEach(() => {
     window.HTMLMediaElement.prototype.play = () => {
       // Do nothing as HTMLMediaElement.prototype.play is not implemented
       return Promise.resolve();
     };
+  });
+
+  it('renders white pawn in a new position after moving by clicking', async () => {
     const user = userEvent.setup();
     const { getByTestId, container } = render(<App />);
 
@@ -27,10 +30,6 @@ describe('App', () => {
   });
 
   it('renders white pawn after capturing black pawn by clicking', async () => {
-    window.HTMLMediaElement.prototype.play = () => {
-      // Do nothing as HTMLMediaElement.prototype.play is not implemented
-      return Promise.resolve();
-    };
     const user = userEvent.setup();
     const { getByTestId, container } = render(<App />);
 
@@ -52,10 +51,6 @@ describe('App', () => {
   });
 
   it('renders piece in initial position after invalid move', async () => {
-    window.HTMLMediaElement.prototype.play = () => {
-      // Do nothing as HTMLMediaElement.prototype.play is not implemented
-      return Promise.resolve();
-    };
     const user = userEvent.setup();
     const { getByTestId, container } = render(<App />);
 

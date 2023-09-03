@@ -9,6 +9,7 @@ Deployed at https://jaaydenh.github.io/chess-app/
 ```
 pmpm install
 ```
+
 ```
 pnpm run dev
 ```
@@ -17,4 +18,10 @@ pnpm run dev
 
 ```
 pnpm run test
+```
+
+To view the Vitest dashboard
+
+```
+pnpm run test:ui
 ```

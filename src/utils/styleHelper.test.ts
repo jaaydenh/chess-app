@@ -1,6 +1,6 @@
-import { Chess, Square } from 'chess.js';
+import { Chess } from 'chess.js';
 import { describe, it, expect } from "vitest";
-import { showHintsForSquare, lastMoveStyles, buildSquareStyles } from "../src/utils/styleHelpers"
+import { showHintsForSquare, lastMoveStyles, buildSquareStyles } from "./styleHelpers"
 
 describe('styleHelpers showHintsForSquare', () => {
   it('should return hints for square', () => {
@@ -39,7 +39,6 @@ describe('styleHelpers lastMoveStyles', () => {
       promotion: 'q',
     });
     const lastMove = lastMoveStyles(game.history({ verbose: true }))
-    console.log(lastMove)
     const expected = {
       e2: { backgroundColor: 'hsla(81, 58%, 50%, .6)' },
       e4: { backgroundColor: 'hsla(81, 58%, 50%, .6)' }

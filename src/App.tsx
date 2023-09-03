@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Chessboard from 'chessboardjsx';
 import { Chess, Square } from 'chess.js';
 
@@ -8,32 +8,31 @@ import captureAudio from './assets/sounds/capture.mp3';
 import './App.css';
 
 function App() {
-  const [game] = useState<Chess>(new Chess());
+  const [game, setGame] = useState<Chess>(new Chess());
+  const [fen, setFen] = useState('');
   const [activeSquare, setActiveSquare] = useState<string>('');
   const [activeDragSquare, setActiveDragSquare] = useState<string>('');
   const [squareStyles, setSquareStyles] = useState({});
+  const [reset, setReset] = useState(false);
   const dropSquareStyle = { backgroundColor: 'hsla(81, 18%, 50%, 1)' };
 
-  // useEffect(() => {
-  //   try {
-  //     const fen = window.localStorage.getItem('fen');
-  //     const json = fen ? JSON.parse(fen || '') : '';
+  useEffect(() => {
+    try {
+      const fen = window.localStorage.getItem('fen');
+      if (fen) {
+        setGame(new Chess(fen));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
-  //     if (json !== '') {
-  //       setGame(new Chess(json));
-  //     } else {
-  //       setGame(new Chess());
-  //     }
-  //     console.log(fen);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log('store game fen');
-  //   game && window.localStorage.setItem('fen', JSON.stringify(game.fen()));
-  // }, [game]);
+  useEffect(() => {
+    if (reset || game.fen() !== new Chess().fen()) {
+      window.localStorage.setItem('fen', fen);
+      setReset(false);
+    }
+  }, [fen]);
 
   const onDragOverSquare = (square: Square) => {
     if (activeDragSquare === '') {
@@ -98,6 +97,7 @@ function App() {
       to: obj.targetSquare,
       promotion: 'q', // TODO: allow player to choose piece
     });
+    setFen(game.fen());
     setSquareStyles(buildSquareStyles(null, game));
     setActiveSquare('');
 
@@ -109,21 +109,33 @@ function App() {
     }
   };
 
+  const restartGame = () => {
+    setReset(true);
+    const game = new Chess();
+    setGame(game);
+    setFen(game.fen());
+  };
+
   return (
-    <Chessboard
-      id="board"
-      calcWidth={({ screenWidth }) => (screenWidth < 560 ? 350 : 480)}
-      position={game.fen()}
-      onSquareClick={onSquareClick}
-      onDrop={onDrop}
-      onDragOverSquare={onDragOverSquare}
-      dropSquareStyle={dropSquareStyle}
-      squareStyles={squareStyles}
-      boardStyle={{
-        borderRadius: '5px',
-        boxShadow: `0 4px 12px rgba(0, 0, 0, 0.5)`,
-      }}
-    />
+    <>
+      <button className="restart" onClick={restartGame}>
+        Restart
+      </button>
+      <Chessboard
+        id="board"
+        calcWidth={({ screenWidth }) => (screenWidth < 560 ? 350 : 480)}
+        position={game.fen()}
+        onSquareClick={onSquareClick}
+        onDrop={onDrop}
+        onDragOverSquare={onDragOverSquare}
+        dropSquareStyle={dropSquareStyle}
+        squareStyles={squareStyles}
+        boardStyle={{
+          borderRadius: '5px',
+          boxShadow: `0 4px 12px rgba(0, 0, 0, 0.5)`,
+        }}
+      />
+    </>
   );
 }
 

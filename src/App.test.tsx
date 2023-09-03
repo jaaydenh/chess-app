@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import App from './App';
@@ -10,6 +10,10 @@ describe('App', () => {
       // Do nothing as HTMLMediaElement.prototype.play is not implemented
       return Promise.resolve();
     };
+  });
+
+  afterEach(() => {
+    window.localStorage.setItem('fen', '');
   });
 
   it('renders white pawn in a new position after moving by clicking', async () => {
@@ -50,7 +54,7 @@ describe('App', () => {
     expect(whitePawnAtF5).toBeInTheDocument();
   });
 
-  it('renders piece in initial position after invalid move', async () => {
+  it('renders piece at initial position after invalid move', async () => {
     const user = userEvent.setup();
     const { getByTestId, container } = render(<App />);
 
@@ -62,5 +66,22 @@ describe('App', () => {
 
     const whiteQueenAtD1 = getByTestId('wQ-d1');
     expect(whiteQueenAtD1).toBeInTheDocument();
+  });
+
+  it('renders piece at initial position after reset button clicked', async () => {
+    const user = userEvent.setup();
+    const { getByTestId, container } = render(<App />);
+
+    const squareE2 = container.querySelector('[data-squareid="e2"]');
+    const squareE4 = container.querySelector('[data-squareid="e4"]');
+
+    squareE2 && (await user.click(squareE2));
+    squareE4 && (await user.click(squareE4));
+
+    const restartButton = screen.getByRole('button', { name: 'Restart' });
+    await user.click(restartButton);
+
+    const whitePawnAtE4 = getByTestId('wP-e2');
+    expect(whitePawnAtE4).toBeInTheDocument();
   });
 });

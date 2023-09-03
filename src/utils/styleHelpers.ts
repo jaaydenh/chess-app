@@ -1,29 +1,31 @@
 import { Chess, Square, Move } from 'chess.js';
 import { HintSquare } from '../types';
 
-const squareStyling = (opts: {
-  pieceSquare: Square | null;
-  history: Move[];
-}) => {
-  const sourceSquare =
-    opts.history.length && opts.history[opts.history.length - 1].from;
-  const targetSquare =
-    opts.history.length && opts.history[opts.history.length - 1].to;
+const pieceSquareStyle = (pieceSquare: Square) => {
+  return {
+    ...{
+      [pieceSquare]: { backgroundColor: 'hsla(81, 18%, 50%, 1)' },
+    },
+  };
+}
+
+export const lastMoveStyles = (history: Move[]) => {
+  if (!history.length) return null;
+
+  const sourceSquare = history[history.length - 1].from;
+  const targetSquare = history[history.length - 1].to;
 
   return {
-    ...(opts.pieceSquare && {
-      [opts.pieceSquare]: { backgroundColor: 'hsla(81, 18%, 50%, 1)' },
-    }),
-    ...(opts.history.length && {
+    ...{
       [sourceSquare]: {
         backgroundColor: 'hsla(81, 58%, 50%, .6)',
       },
-    }),
-    ...(opts.history.length && {
+    },
+    ...{
       [targetSquare]: {
         backgroundColor: 'hsla(81, 58%, 50%, .6)',
       },
-    }),
+    },
   };
 };
 
@@ -68,10 +70,8 @@ export const buildSquareStyles = (
   }, {});
 
   return {
-    ...squareStyling({
-      history: game.history({ verbose: true }),
-      pieceSquare: sourceSquare,
-    }),
+    ...sourceSquare && pieceSquareStyle(sourceSquare),
+    ...lastMoveStyles(game.history({ verbose: true })),
     ...hintStyles,
   };
 };

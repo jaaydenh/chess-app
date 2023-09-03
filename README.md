@@ -20,8 +20,8 @@ pnpm run dev
 pnpm run test
 ```
 
-To view the Vitest dashboard
+To view the Vitest dashboard with code coverage
 
 ```
-pnpm run test:ui
+pnpm run test:ui --coverage.enabled=true
 ```

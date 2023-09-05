@@ -8,3 +8,8 @@
 .restart {
   margin-bottom: 5em;
 }
+
+.statusText {
+  color: white;
+  padding: 1rem;
+}

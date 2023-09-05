@@ -3,6 +3,7 @@ import Chessboard from 'chessboardjsx';
 import { Chess, Square } from 'chess.js';
 
 import { buildSquareStyles } from './utils/styleHelpers';
+import { getGameStatus } from './utils/gameLogic';
 import moveAudio from './assets/sounds/move.mp3';
 import captureAudio from './assets/sounds/capture.mp3';
 import './App.css';
@@ -10,6 +11,7 @@ import './App.css';
 function App() {
   const [game, setGame] = useState<Chess>(new Chess());
   const [fen, setFen] = useState('');
+  const [gameStatus, setGameStatus] = useState('W');
   const [activeSquare, setActiveSquare] = useState<string>('');
   const [activeDragSquare, setActiveDragSquare] = useState<string>('');
   const [squareStyles, setSquareStyles] = useState({});
@@ -17,6 +19,7 @@ function App() {
   const dropSquareStyle = { backgroundColor: 'hsla(81, 18%, 50%, 1)' };
 
   useEffect(() => {
+    setGameStatus(getGameStatus(game));
     try {
       const fen = window.localStorage.getItem('fen');
       if (fen) {
@@ -100,6 +103,7 @@ function App() {
     setFen(game.fen());
     setSquareStyles(buildSquareStyles(null, game));
     setActiveSquare('');
+    setGameStatus(getGameStatus(game));
 
     const audio = new Audio(move.captured ? captureAudio : moveAudio);
     try {
@@ -114,6 +118,7 @@ function App() {
     const game = new Chess();
     setGame(game);
     setFen(game.fen());
+    setGameStatus(getGameStatus(game));
   };
 
   return (
@@ -121,6 +126,7 @@ function App() {
       <button className="restart" onClick={restartGame}>
         Restart
       </button>
+      <div className="statusText">{gameStatus}</div>
       <Chessboard
         id="board"
         calcWidth={({ screenWidth }) => (screenWidth < 560 ? 350 : 480)}

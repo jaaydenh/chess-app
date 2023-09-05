@@ -118,6 +118,7 @@ function App() {
     const game = new Chess();
     setGame(game);
     setFen(game.fen());
+    setSquareStyles(buildSquareStyles(null, game));
     setGameStatus(getGameStatus(game));
   };
 
